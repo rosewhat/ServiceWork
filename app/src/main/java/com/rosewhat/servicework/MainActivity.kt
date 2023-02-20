@@ -8,6 +8,8 @@ import android.os.Build
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingWorkPolicy
+import androidx.work.WorkManager
 import com.rosewhat.servicework.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -62,6 +64,16 @@ class MainActivity : AppCompatActivity() {
         }
         binding.jobIntentService.setOnClickListener {
             MyJobIntentService.enqueue(this, page++)
+        }
+        binding.workManager.setOnClickListener {
+            // без утечек памяти
+            val workerManager = WorkManager.getInstance(applicationContext)
+            workerManager.enqueueUniqueWork(
+                MyWorker.WORK_NAME,
+                // если работа уже запущена
+                ExistingWorkPolicy.APPEND,
+                MyWorker.makeRequest(page++)
+            )
         }
 
 
